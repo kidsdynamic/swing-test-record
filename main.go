@@ -44,7 +44,7 @@ func IPOCHandler(c *gin.Context) {
 	err := c.BindJSON(&ipqc)
 
 	if ipqc.LotNumber == "" {
-		log.Panicf("The Log number is required. Parameters: %v", ipqc)
+		log.Printf("The Log number is required. Parameters: %v", ipqc)
 		ErrorHandler(c, "The Log_number is required")
 		return
 	}
@@ -53,7 +53,7 @@ func IPOCHandler(c *gin.Context) {
 		ipqc.Type, ipqc.LotNumber, ipqc.Data.SerialNumber, ipqc.Data.Voltage1, ipqc.Data.Voltage2, ipqc.Data.Result, ipqc.Data.DateTime)
 
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
 	}
@@ -70,7 +70,7 @@ func ErrorHandler(c *gin.Context, message string) {
 func NewDB() *sql.DB {
 	db, err := sql.Open("mysql", "root:koe7POut@tcp(45.55.248.58:3306)/swing_test_record?charset=utf8&parseTime=true")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	return db
