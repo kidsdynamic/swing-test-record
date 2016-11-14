@@ -8,17 +8,20 @@ import (
 
 	"fmt"
 
+	"os"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/urfave/cli"
 )
 
 type IPQC struct {
-	Type      int           `json:"Type"`
-	LotNumber string        `json:"Lot_number"`
-	Data      SwingFunction `json:"Data"`
+	Type      int      `json:"Type"`
+	LotNumber string   `json:"Lot_number"`
+	Data      IPQCData `json:"Data"`
 }
 
-type SwingFunction struct {
+type IPQCData struct {
 	SerialNumber string `json:"serial_number"`
 	Voltage1     string `json:"Voltage_1"`
 	Voltage2     string `json:"Voltage_2"`
@@ -26,13 +29,69 @@ type SwingFunction struct {
 	DateTime     string `json:"Date_time"`
 }
 
+type Database struct {
+	Name     string
+	User     string
+	Password string
+	IP       string
+}
+
+type SwingFunction struct {
+	Type int `json:"Type"`
+}
+
+var database Database
+
 func main() {
-	InitDatabase()
+	app := cli.NewApp()
+	app.Name = "Swing-Push-Worker"
 
-	router := gin.Default()
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			EnvVar: "DATABASE_USER",
+			Name:   "database_user",
+			Usage:  "Database user name",
+			Value:  "",
+		},
+		cli.StringFlag{
+			EnvVar: "DATABASE_PASSWORD",
+			Name:   "database_password",
+			Usage:  "Database password",
+			Value:  "",
+		},
+		cli.StringFlag{
+			EnvVar: "DATABASE_IP",
+			Name:   "database_IP",
+			Usage:  "Database IP address with port number",
+			Value:  "",
+		},
+		cli.StringFlag{
+			EnvVar: "DATABASE_NAME",
+			Name:   "database_name",
+			Usage:  "Database name",
+			Value:  "swing_test_record",
+		},
+	}
 
-	router.POST("/ipqc", IPOCHandler)
-	router.Run(":8110")
+	app.Action = func(c *cli.Context) error {
+		database = Database{
+			Name:     c.String("database_name"),
+			User:     c.String("database_user"),
+			Password: c.String("database_password"),
+			IP:       c.String("database_IP"),
+		}
+
+		fmt.Printf("Database: %v", database)
+		InitDatabase()
+
+		router := gin.Default()
+
+		router.POST("/ipqc", IPOCHandler)
+		router.Run(":8110")
+		return nil
+	}
+
+	app.Run(os.Args)
 
 }
 
@@ -68,7 +127,9 @@ func ErrorHandler(c *gin.Context, message string) {
 }
 
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:koe7POut@tcp(45.55.248.58:3306)/swing_test_record?charset=utf8&parseTime=true")
+	connectString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", database.User, database.Password, database.IP, database.Name)
+
+	db, err := sql.Open("mysql", connectString)
 	if err != nil {
 		log.Println(err)
 	}
