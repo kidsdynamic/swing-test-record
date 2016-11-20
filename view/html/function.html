@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <a href="/"><h4>< Home</h4></a>
+    <h2>Function Table</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Lot Number</th>
+            <th>SerialNumber</th>
+            <th>DateTime    </th>
+            <th>BLEResult   </th>
+            <th>UV          </th>
+            <th>UVResult    </th>
+            <th>AccXMax     </th>
+            <th>AccXMin     </th>
+            <th>AccXResult  </th>
+            <th>AccYMax     </th>
+            <th>AccYMin     </th>
+            <th>AccYResult  </th>
+            <th>AudioMax    </th>
+            <th>AudioResult </th>
+            <th>MacAddress  </th>
+            <th>RSSI        </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{ range $index, $d := .data }}
+        <tr>
+            <td>
+                {{ $d.Id }}
+            </td>
+            <td>
+                {{ $d.Type }}
+            </td>
+            <td>
+                {{ $d.LotNumber }}
+            </td>
+            <td>
+                {{ $d.SerialNumber }}
+            </td>
+            <td>
+                {{ $d.DateTime }}
+            </td>
+            <td>
+                {{ $d.BLEResult }}
+            </td>
+            <td>
+                {{ $d.UV }}
+            </td>
+            <td>
+                {{ $d.UVResult }}
+            </td>
+            <td>
+                {{ $d.AccXMax }}
+            </td>
+            <td>
+                {{ $d.AccXMax }}
+            </td>
+            <td>
+                {{ $d.AccXMin }}
+            </td>
+            <td>
+                {{ $d.AccYMax }}
+            </td>
+            <td>
+                {{ $d.AccYMin }}
+            </td>
+            <td>
+                {{ $d.AccYResult }}
+            </td>
+            <td>
+                {{ $d.AudioMax }}
+            </td>
+            <td>
+                {{ $d.AudioResult }}
+            </td>
+            <td>
+                {{ $d.MacAddress }}
+            </td>
+            <td>
+                {{ $d.Rssi }}
+            </td>
+
+
+        </tr>
+
+        {{ end }}
+        </tbody>
+
+
+    </table>
+</div>
+
+
+</body>
+</html>

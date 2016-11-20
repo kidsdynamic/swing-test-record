@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <a href="/"><h4>< Home</h4></a>
+    <h2>IPQC Table</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Lot Number</th>
+            <th>Serial Number</th>
+            <th>Voltage 1</th>
+            <th>Voltage 2</th>
+            <th>Result</th>
+            <th>Date Time</th>
+            <th>Date Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{ range $index, $d := .data }}
+        <tr>
+            <td>
+                {{ $d.Id }}
+            </td>
+            <td>
+                {{ $d.Type }}
+            </td>
+            <td>
+                {{ $d.LotNumber }}
+            </td>
+            <td>
+                {{ $d.SerialNumber }}
+            </td>
+            <td>
+                {{ $d.Voltage1 }}
+            </td>
+            <td>
+                {{ $d.Voltage2 }}
+            </td>
+            <td>
+                {{ $d.Result }}
+            </td>
+            <td>
+                {{ $d.DateTime }}
+            </td>
+            <td>
+                {{ $d.DateCreated }}
+            </td>
+
+        </tr>
+
+        {{ end }}
+        </tbody>
+
+
+    </table>
+</div>
+
+
+</body>
+</html>

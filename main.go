@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 
 	"net/http"
@@ -10,24 +9,13 @@ import (
 
 	"os"
 
+	"swing-test-record/model"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"github.com/urfave/cli"
 )
-
-type IPQC struct {
-	Type      int      `json:"Type"`
-	LotNumber string   `json:"Lot_number"`
-	Data      IPQCData `json:"Data"`
-}
-
-type IPQCData struct {
-	SerialNumber string `json:"serial_number"`
-	Voltage1     string `json:"Voltage_1"`
-	Voltage2     string `json:"Voltage_2"`
-	Result       string `json:"Result"`
-	DateTime     string `json:"Date_time"`
-}
 
 type Database struct {
 	Name     string
@@ -36,11 +24,19 @@ type Database struct {
 	IP       string
 }
 
-type SwingFunction struct {
-	Type int `json:"Type"`
-}
-
 var database Database
+
+func NewDB() *sqlx.DB {
+	connectString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", database.User, database.Password, database.IP, database.Name)
+
+	//dd, errr := sqlx.Connect("mysql", connectString)
+	db, err := sqlx.Connect("mysql", connectString)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return db
+}
 
 func main() {
 	app := cli.NewApp()
@@ -85,8 +81,20 @@ func main() {
 		InitDatabase()
 
 		router := gin.Default()
+		router.LoadHTMLGlob("view/html/**")
 
-		router.POST("/ipqc", IPOCHandler)
+		router.POST("/ipqc", IPQCHandler)
+		router.POST("/function", FunctionHandler)
+		router.POST("/barcode", BarcodeHandler)
+
+		router.GET("/", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", nil)
+		})
+
+		router.GET("/ipqc", IPQCPage)
+		router.GET("/barcode", BarcodePage)
+		router.GET("/function", FunctionPage)
+
 		router.Run(":8110")
 		return nil
 	}
@@ -95,12 +103,71 @@ func main() {
 
 }
 
-func IPOCHandler(c *gin.Context) {
+func IPQCPage(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
 
-	var ipqc IPQC
+	ipqc := []model.IPQCDatabase{}
+	err := db.Select(&ipqc, "SELECT * FROM IPQC")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(ipqc)
+
+	c.HTML(http.StatusOK, "ipqc.html", gin.H{
+		"data": ipqc,
+	})
+}
+
+func FunctionPage(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	functionData := []model.FunctionDatabase{}
+	err := db.Select(&functionData, "SELECT * FROM Function")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(functionData)
+
+	c.HTML(http.StatusOK, "function.html", gin.H{
+		"data": functionData,
+	})
+}
+
+func BarcodePage(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	barcodeData := []model.BarcodeDatabase{}
+	err := db.Select(&barcodeData, "SELECT * FROM Barcode")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(barcodeData)
+	c.HTML(http.StatusOK, "barcode.html", gin.H{
+		"data": barcodeData,
+	})
+}
+
+func IPQCHandler(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	var ipqc model.IPQC
 	err := c.BindJSON(&ipqc)
+
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		return
+	}
 
 	if ipqc.LotNumber == "" {
 		log.Printf("The Log number is required. Parameters: %v", ipqc)
@@ -108,7 +175,7 @@ func IPOCHandler(c *gin.Context) {
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO IPQC (type, lot_number, serial_number, voltage_1, voltage_2, result, date_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+	_, err = db.Exec("INSERT INTO IPQC (type, lot_number, serial_number, voltage_1, voltage_2, result, date_time, date_created) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
 		ipqc.Type, ipqc.LotNumber, ipqc.Data.SerialNumber, ipqc.Data.Voltage1, ipqc.Data.Voltage2, ipqc.Data.Result, ipqc.Data.DateTime)
 
 	if err != nil {
@@ -117,6 +184,71 @@ func IPOCHandler(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+
+}
+
+func FunctionHandler(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	var function model.Function
+
+	err := c.BindJSON(&function)
+
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		return
+	}
+
+	if function.LotNumber == "" {
+		log.Printf("The Log number is required for function API. Parameters: %v", function)
+		ErrorHandler(c, "The Log_number is required")
+	}
+	_, err = db.Exec("INSERT INTO Function (type, lot_number, serial_number, Date_time, BLE_result, UV, UV_result,"+
+		" Acc_x_max, Acc_x_min, Acc_x_result, Acc_y_max, Acc_y_min, Acc_y_result, Audio_max, Audio_result, Mac_address, RSSI, date_created) VALUES ("+
+		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+		function.Type, function.LotNumber, function.Data.SerialNumber, function.Data.DateTime, function.Data.BLEResult, function.Data.UV, function.Data.UVResult,
+		function.Data.AccXMax, function.Data.AccXMin, function.Data.AccXResult, function.Data.AccYMax, function.Data.AccYMin, function.Data.AccYResult,
+		function.Data.AudioMax, function.Data.AudioResult, function.Data.MacAddress, function.Data.Rssi)
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+}
+
+func BarcodeHandler(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	var barcode model.Barcode
+
+	err := c.BindJSON(&barcode)
+
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		return
+	}
+
+	_, err = db.Exec("INSERT INTO Barcode (type, lot_number, barcode_number, date_created) VALUES (?, ?, ?, NOW())",
+		barcode.Type, barcode.Type, barcode.Data.BarcodeNumber)
+
+	if err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 }
 
 func ErrorHandler(c *gin.Context, message string) {
@@ -126,17 +258,6 @@ func ErrorHandler(c *gin.Context, message string) {
 	})
 }
 
-func NewDB() *sql.DB {
-	connectString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", database.User, database.Password, database.IP, database.Name)
-
-	db, err := sql.Open("mysql", connectString)
-	if err != nil {
-		log.Println(err)
-	}
-
-	return db
-}
-
 func InitDatabase() {
 
 	db := NewDB()
@@ -144,9 +265,13 @@ func InitDatabase() {
 	_, err := db.Query("SELECT 1 FROM IPQC LIMIT 1")
 
 	log.Printf("Inital Database\n")
+
+	/*
+	  Create IPQC Table
+	*/
 	if err != nil {
 		_, err := db.Exec("CREATE TABLE IPQC(id INT NOT NULL AUTO_INCREMENT, type INT(11) NOT NULL, lot_number VARCHAR(200), serial_number VARCHAR(200) NOT NULL," +
-			"voltage_1 VARCHAR(200), voltage_2 VARCHAR(200), result VARCHAR(200), date_time VARCHAR(200), PRIMARY KEY (id))")
+			"voltage_1 VARCHAR(200), voltage_2 VARCHAR(200), result VARCHAR(200), date_time VARCHAR(200), date_created datetime NOT NULL, PRIMARY KEY (id))")
 
 		if err != nil {
 			log.Fatal(err)
@@ -155,6 +280,44 @@ func InitDatabase() {
 		log.Printf("Table IPQC successfully created\n")
 	} else {
 		log.Printf("Table IPQC already exists\n")
+	}
+
+	_, err = db.Query("SELECT 1 FROM Function LIMIT 1")
+
+	/*
+	  Create Function Table
+	*/
+	if err != nil {
+		_, err = db.Exec("CREATE TABLE Function(id INT NOT NULL AUTO_INCREMENT, type INT(11) NOT NULL, lot_number VARCHAR(200), serial_number VARCHAR(200) NOT NULL," +
+			"date_time VARCHAR(200), BLE_result VARCHAR(200), UV VARCHAR(200), UV_result VARCHAR(200), Acc_x_max VARCHAR(200), Acc_x_min VARCHAR(200)," +
+			"Acc_x_result VARCHAR(200), Acc_y_max VARCHAR(200), Acc_y_min VARCHAR(200), Acc_y_result VARCHAR(200), Audio_max VARCHAR(200)," +
+			"Audio_result VARCHAR(200), Mac_address VARCHAR(200), RSSI VARCHAR(200), date_created datetime NOT NULL, PRIMARY KEY (id))")
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Table Function successfully created\n")
+
+	} else {
+		log.Printf("Table Function already exists\n")
+	}
+
+	_, err = db.Query("SELECT 1 FROM Barcode LIMIT 1")
+
+	/*
+	  Create Barcode Table
+	*/
+	if err != nil {
+		_, err = db.Exec("CREATE TABLE Barcode(id INT NOT NULL AUTO_INCREMENT, type INT(11) NOT NULL, lot_number VARCHAR(200), barcode_number VARCHAR(200) NOT NULL" +
+			", date_created datetime NOT NULL, PRIMARY KEY (id))")
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Table Barcode successfully created\n")
+
+	} else {
+		log.Printf("Table Barcode already exists\n")
 	}
 
 }
