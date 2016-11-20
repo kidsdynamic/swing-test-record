@@ -24,6 +24,8 @@ type Database struct {
 	IP       string
 }
 
+var authKey = "TestKey"
+
 var database Database
 
 func NewDB() *sqlx.DB {
@@ -67,6 +69,12 @@ func main() {
 			Usage:  "Database name",
 			Value:  "swing_test_record",
 		},
+		cli.StringFlag{
+			EnvVar: "API_AUTH_KEY",
+			Name:   "auth_key",
+			Usage:  "API auth key",
+			Value:  "TestKey",
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
@@ -76,16 +84,22 @@ func main() {
 			Password: c.String("database_password"),
 			IP:       c.String("database_IP"),
 		}
+		authKey = c.String("auth_key")
 
 		fmt.Printf("Database: %v", database)
 		InitDatabase()
 
 		router := gin.Default()
+		router.Use(gin.Logger())
+		router.Use(gin.Recovery())
+
 		router.LoadHTMLGlob("view/html/**")
 
-		router.POST("/ipqc", IPQCHandler)
-		router.POST("/function", FunctionHandler)
-		router.POST("/barcode", BarcodeHandler)
+		api := router.Group("/api", Auth())
+		//api.Use(Auth())
+		api.POST("/ipqc", IPQCHandler)
+		api.POST("/function", FunctionHandler)
+		api.POST("/barcode", BarcodeHandler)
 
 		router.GET("/", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index.html", nil)
@@ -103,12 +117,29 @@ func main() {
 
 }
 
+func Auth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		clientAuthKey := c.Request.Header.Get("X-AUTH-TOKEN")
+
+		if clientAuthKey == authKey {
+			c.Next()
+		} else {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Please use correct X-AUTH-TOKEN",
+			})
+			c.Abort()
+			return
+		}
+	}
+
+}
+
 func IPQCPage(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
 
 	ipqc := []model.IPQCDatabase{}
-	err := db.Select(&ipqc, "SELECT * FROM IPQC")
+	err := db.Select(&ipqc, "SELECT * FROM IPQC ORDER BY date_created DESC")
 
 	if err != nil {
 		fmt.Println(err)
@@ -126,7 +157,7 @@ func FunctionPage(c *gin.Context) {
 	defer db.Close()
 
 	functionData := []model.FunctionDatabase{}
-	err := db.Select(&functionData, "SELECT * FROM Function")
+	err := db.Select(&functionData, "SELECT * FROM Function ORDER BY date_created DESC")
 
 	if err != nil {
 		fmt.Println(err)
@@ -144,7 +175,7 @@ func BarcodePage(c *gin.Context) {
 	defer db.Close()
 
 	barcodeData := []model.BarcodeDatabase{}
-	err := db.Select(&barcodeData, "SELECT * FROM Barcode")
+	err := db.Select(&barcodeData, "SELECT * FROM Barcode ORDER BY date_created DESC")
 
 	if err != nil {
 		fmt.Println(err)
