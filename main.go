@@ -9,7 +9,7 @@ import (
 
 	"os"
 
-	"swing-test-record/model"
+	"github.com/swing-test-record/model"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -109,7 +109,8 @@ func main() {
 		router.GET("/barcode", BarcodePage)
 		router.GET("/function", FunctionPage)
 
-		router.Run(":8110")
+		//router.Run(":8110")
+		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
 		return nil
 	}
 
