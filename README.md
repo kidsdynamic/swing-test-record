@@ -1,4 +1,4 @@
-## [View Database Result](http://childrenlab.com:8110/)
+## [View Database Result](https://childrenlab.com:8110/)
 # Swing 產測 API
 * IPQC, Function, Barcode API
 
