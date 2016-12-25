@@ -1,9 +1,9 @@
 swing-test-record:
   build: .
-  working_dir: /go/src/swing-test-record
+  working_dir: /go/src/github.com/swing-test-record
   container_name: swing-test-record
   command: "go run main.go"
   ports:
     - 8110:8110
   volumes:
-     - .:/go/src/swing-test-record
+     - .:/go/src/github.com/swing-test-record
