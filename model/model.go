@@ -21,7 +21,8 @@ type FunctionDatabase struct {
 	SerialNumber string    `db:"serial_number"`
 	DateTime     string    `db:"date_time"`
 	BLEResult    string    `db:"BLE_result"`
-	UV           string    `db:"UV"`
+	UVMax        string    `db:"UV_max"`
+	UVMin        string    `db:"UV_min"`
 	UVResult     string    `db:"UV_result"`
 	AccXMax      string    `db:"Acc_x_max"`
 	AccXMin      string    `db:"Acc_x_min"`
@@ -42,6 +43,7 @@ type BarcodeDatabase struct {
 	LotNumber     string    `db:"lot_number"`
 	BarcodeNumber string    `db:"barcode_number"`
 	DateCreated   time.Time `db:"date_created"`
+	DateTime      string    `db:"date_time"`
 }
 
 type IPQC struct {

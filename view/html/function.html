@@ -22,7 +22,8 @@
             <th>SerialNumber</th>
             <th>DateTime    </th>
             <th>BLEResult   </th>
-            <th>UV          </th>
+            <th>UVMax          </th>
+            <th>UVMin          </th>
             <th>UVResult    </th>
             <th>AccXMax     </th>
             <th>AccXMin     </th>
@@ -59,7 +60,10 @@
                 {{ $d.BLEResult }}
             </td>
             <td>
-                {{ $d.UV }}
+                {{ $d.UVMax }}
+            </td>
+            <td>
+                {{ $d.UVMin }}
             </td>
             <td>
                 {{ $d.UVResult }}
