@@ -195,8 +195,8 @@ func IPQCHandler(c *gin.Context) {
 	x, _ := ioutil.ReadAll(c.Request.Body)
 
 	fmt.Printf("%s\n", string(x))
-	var ipqc model.IPQC
-	err := c.BindJSON(&ipqc)
+	//var ipqc model.IPQC
+/*	err := c.BindJSON(&ipqc)
 
 	if err != nil {
 		log.Println(err)
@@ -217,7 +217,7 @@ func IPQCHandler(c *gin.Context) {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}
+	}*/
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
