@@ -229,13 +229,13 @@ func FunctionHandler(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
 
-	var function model.Function
+	//var function model.Function
 
 	x, _ := ioutil.ReadAll(c.Request.Body)
 
 	fmt.Printf("%s\n", string(x))
 
-	err := c.BindJSON(&function)
+/*	err := c.BindJSON(&function)
 
 	if err != nil {
 		log.Println(err)
@@ -257,7 +257,7 @@ func FunctionHandler(c *gin.Context) {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}
+	}*/
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 	})
