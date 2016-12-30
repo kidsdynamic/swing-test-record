@@ -264,8 +264,8 @@ func FunctionHandler(c *gin.Context) {
 }
 
 func BarcodeHandler(c *gin.Context) {
-	db := NewDB()
-	defer db.Close()
+	//db := NewDB()
+	//defer db.Close()
 	x, _ := ioutil.ReadAll(c.Request.Body)
 
 	fmt.Printf("%s\n", string(x))

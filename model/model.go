@@ -68,7 +68,7 @@ type FunctionData struct {
 	SerialNumber string `json:"Serial_number"`
 	DateTime     string `json:"Date_time"`
 	BLEResult    string `json:"BLE_result"`
-	UV           string `json:"UV"`
+	//UV           string `json:"UV"`
 	UVResult     string `json:"UV_result"`
 	AccXMax      string `json:"Acc_x_max"`
 	AccXMin      string `json:"Acc_x_min"`
