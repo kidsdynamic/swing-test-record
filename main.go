@@ -259,7 +259,7 @@ func FunctionHandler(c *gin.Context) {
 		return
 	}*/
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+		"success": "true",
 	})
 }
 
