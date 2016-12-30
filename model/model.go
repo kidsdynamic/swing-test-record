@@ -45,9 +45,9 @@ type BarcodeDatabase struct {
 }
 
 type IPQC struct {
-	Type      int      `json:"Type"`
-	LotNumber string   `json:"Lot_number"`
-	Data      IPQCData `json:"Data"`
+	Type      int        `json:"Type"`
+	LotNumber string     `json:"Lot_number"`
+	Data      []IPQCData `json:"Data"`
 }
 
 type IPQCData struct {
@@ -59,19 +59,18 @@ type IPQCData struct {
 }
 
 type Function struct {
-	Type      int          `json:"Type"`
-	LotNumber string       `json:"Lot_number"`
-	Data      FunctionData `json:"Data"`
+	Type      int            `json:"Type"`
+	LotNumber string         `json:"Lot_number"`
+	Data      []FunctionData `json:"Data"`
 }
 
 type FunctionData struct {
 	SerialNumber string `json:"Serial_number"`
 	DateTime     string `json:"Date_time"`
 	BLEResult    string `json:"BLE_result"`
-	//UV           string `json:"UV"`
+	UVMax        string `json:"UV_max"`
+	UVMin        string `json:"UV_min"`
 	UVResult     string `json:"UV_result"`
-	UVMax string `json:"UV_Max"`
-	UVMin string `json:"UV_Min"`
 	AccXMax      string `json:"Acc_x_max"`
 	AccXMin      string `json:"Acc_x_min"`
 	AccXResult   string `json:"Acc_x_result"`
@@ -85,11 +84,12 @@ type FunctionData struct {
 }
 
 type Barcode struct {
-	Type      int         `json:"Type"`
-	LotNumber string      `json:"Lot_number"`
-	Data      BarcodeData `json:"Data"`
+	Type      int           `json:"Type"`
+	LotNumber string        `json:"Lot_number"`
+	Data      []BarcodeData `json:"Data"`
 }
 
 type BarcodeData struct {
 	BarcodeNumber string `json:"Barcode_number"`
+	DateTime      string `json:"Date_time"`
 }

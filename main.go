@@ -15,7 +15,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/urfave/cli"
-	"io/ioutil"
 )
 
 type Database struct {
@@ -192,15 +191,13 @@ func BarcodePage(c *gin.Context) {
 func IPQCHandler(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
-	x, _ := ioutil.ReadAll(c.Request.Body)
 
-	fmt.Printf("%s\n", string(x))
-	//var ipqc model.IPQC
-/*	err := c.BindJSON(&ipqc)
+	var ipqc model.IPQC
+	err := c.BindJSON(&ipqc)
 
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to struct. %v", err))
 		return
 	}
 
@@ -210,14 +207,19 @@ func IPQCHandler(c *gin.Context) {
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO IPQC (type, lot_number, serial_number, voltage_1, voltage_2, result, date_time, date_created) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
-		ipqc.Type, ipqc.LotNumber, ipqc.Data.SerialNumber, ipqc.Data.Voltage1, ipqc.Data.Voltage2, ipqc.Data.Result, ipqc.Data.DateTime)
+	t := db.MustBegin()
+	for _, data := range ipqc.Data {
+		_ = t.MustExec("INSERT INTO IPQC (type, lot_number, serial_number, voltage_1, voltage_2, result, date_time, date_created) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
+			ipqc.Type, ipqc.LotNumber, data.SerialNumber, data.Voltage1, data.Voltage2, data.Result, data.DateTime)
+	}
+
+	t.Commit()
 
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}*/
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": "true",
@@ -229,17 +231,13 @@ func FunctionHandler(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
 
-	//var function model.Function
+	var function model.Function
 
-	x, _ := ioutil.ReadAll(c.Request.Body)
-
-	fmt.Printf("%s\n", string(x))
-
-/*	err := c.BindJSON(&function)
+	err := c.BindJSON(&function)
 
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to struct. %v", err))
 		return
 	}
 
@@ -247,46 +245,61 @@ func FunctionHandler(c *gin.Context) {
 		log.Printf("The Log number is required for function API. Parameters: %v", function)
 		ErrorHandler(c, "The Log_number is required")
 	}
-	_, err = db.Exec("INSERT INTO Function (type, lot_number, serial_number, Date_time, BLE_result, UV, UV_result,"+
-		" Acc_x_max, Acc_x_min, Acc_x_result, Acc_y_max, Acc_y_min, Acc_y_result, Audio_max, Audio_result, Mac_address, RSSI, date_created) VALUES ("+
-		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
-		function.Type, function.LotNumber, function.Data.SerialNumber, function.Data.DateTime, function.Data.BLEResult, function.Data.UV, function.Data.UVResult,
-		function.Data.AccXMax, function.Data.AccXMin, function.Data.AccXResult, function.Data.AccYMax, function.Data.AccYMin, function.Data.AccYResult,
-		function.Data.AudioMax, function.Data.AudioResult, function.Data.MacAddress, function.Data.Rssi)
+
+	t := db.MustBegin()
+	for _, data := range function.Data {
+		_, err = t.Exec("INSERT INTO Function (type, lot_number, serial_number, Date_time, BLE_result, UV_max, UV_min, UV_result,"+
+			" Acc_x_max, Acc_x_min, Acc_x_result, Acc_y_max, Acc_y_min, Acc_y_result, Audio_max, Audio_result, Mac_address, RSSI, date_created) VALUES ("+
+			"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+			function.Type, function.LotNumber, data.SerialNumber, data.DateTime, data.BLEResult, data.UVMax, data.UVMin, data.UVResult,
+			data.AccXMax, data.AccXMin, data.AccXResult, data.AccYMax, data.AccYMin, data.AccYResult,
+			data.AudioMax, data.AudioResult, data.MacAddress, data.Rssi)
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
+			return
+		}
+	}
+
+	err = t.Commit()
+
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}*/
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": "true",
 	})
 }
 
 func BarcodeHandler(c *gin.Context) {
-	//db := NewDB()
-	//defer db.Close()
-	x, _ := ioutil.ReadAll(c.Request.Body)
+	db := NewDB()
+	defer db.Close()
 
-	fmt.Printf("%s\n", string(x))
-	//var barcode model.Barcode
+	var barcode model.Barcode
 
-/*	err := c.BindJSON(&barcode)
+	err := c.BindJSON(&barcode)
 
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to model. %v", err))
+		ErrorHandler(c, fmt.Sprintf("Error on converting parameters to struct. %v", err))
 		return
 	}
 
-	_, err = db.Exec("INSERT INTO Barcode (type, lot_number, barcode_number, date_created) VALUES (?, ?, ?, NOW())",
-		barcode.Type, barcode.Type, barcode.Data.BarcodeNumber)
+	t := db.MustBegin()
+	for _, data := range barcode.Data {
+		_ = t.MustExec("INSERT INTO Barcode (type, lot_number, barcode_number, date_time, date_created) VALUES (?, ?, ?, ?, NOW())",
+			barcode.Type, barcode.Type, data.BarcodeNumber, data.DateTime)
+	}
+
+	t.Commit()
 
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}*/
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": "true",
 	})
@@ -294,7 +307,7 @@ func BarcodeHandler(c *gin.Context) {
 
 func ErrorHandler(c *gin.Context, message string) {
 	c.JSON(http.StatusBadRequest, gin.H{
-		"success": false,
+		"success": "false",
 		"message": message,
 	})
 }
@@ -330,7 +343,7 @@ func InitDatabase() {
 	*/
 	if err != nil {
 		_, err = db.Exec("CREATE TABLE Function(id INT NOT NULL AUTO_INCREMENT, type INT(11) NOT NULL, lot_number VARCHAR(200), serial_number VARCHAR(200) NOT NULL," +
-			"date_time VARCHAR(200), BLE_result VARCHAR(200), UV VARCHAR(200), UV_result VARCHAR(200), Acc_x_max VARCHAR(200), Acc_x_min VARCHAR(200)," +
+			"date_time VARCHAR(200), BLE_result VARCHAR(200), UV_max VARCHAR(200), UV_min VARCHAR(200), UV_result VARCHAR(200), Acc_x_max VARCHAR(200), Acc_x_min VARCHAR(200)," +
 			"Acc_x_result VARCHAR(200), Acc_y_max VARCHAR(200), Acc_y_min VARCHAR(200), Acc_y_result VARCHAR(200), Audio_max VARCHAR(200)," +
 			"Audio_result VARCHAR(200), Mac_address VARCHAR(200), RSSI VARCHAR(200), date_created datetime NOT NULL, PRIMARY KEY (id))")
 
@@ -350,7 +363,7 @@ func InitDatabase() {
 	*/
 	if err != nil {
 		_, err = db.Exec("CREATE TABLE Barcode(id INT NOT NULL AUTO_INCREMENT, type INT(11) NOT NULL, lot_number VARCHAR(200), barcode_number VARCHAR(200) NOT NULL" +
-			", date_created datetime NOT NULL, PRIMARY KEY (id))")
+			", date_created datetime NOT NULL, date_time VARCHAR(200), PRIMARY KEY (id))")
 
 		if err != nil {
 			log.Fatal(err)
