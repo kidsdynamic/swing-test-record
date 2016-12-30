@@ -96,7 +96,7 @@ func main() {
 
 		router.LoadHTMLGlob("view/html/**")
 
-		api := router.Group("/api", Auth())
+		api := router.Group("/api", nil)
 		//api.Use(Auth())
 		api.POST("/ipqc", IPQCHandler)
 		api.POST("/function", FunctionHandler)
@@ -269,9 +269,9 @@ func BarcodeHandler(c *gin.Context) {
 	x, _ := ioutil.ReadAll(c.Request.Body)
 
 	fmt.Printf("%s\n", string(x))
-	var barcode model.Barcode
+	//var barcode model.Barcode
 
-	err := c.BindJSON(&barcode)
+/*	err := c.BindJSON(&barcode)
 
 	if err != nil {
 		log.Println(err)
@@ -286,9 +286,9 @@ func BarcodeHandler(c *gin.Context) {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on inserting data to database, please check your parameters."))
 		return
-	}
+	}*/
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+		"success": "true",
 	})
 }
 
