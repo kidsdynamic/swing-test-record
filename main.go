@@ -96,7 +96,7 @@ func main() {
 
 		router.LoadHTMLGlob("view/html/**")
 
-		api := router.Group("/api", nil)
+		api := router.Group("/api", Auth())
 		//api.Use(Auth())
 		api.POST("/ipqc", IPQCHandler)
 		api.POST("/function", FunctionHandler)

@@ -70,6 +70,8 @@ type FunctionData struct {
 	BLEResult    string `json:"BLE_result"`
 	//UV           string `json:"UV"`
 	UVResult     string `json:"UV_result"`
+	UVMax string `json:"UV_Max"`
+	UVMin string `json:"UV_Min"`
 	AccXMax      string `json:"Acc_x_max"`
 	AccXMin      string `json:"Acc_x_min"`
 	AccXResult   string `json:"Acc_x_result"`
