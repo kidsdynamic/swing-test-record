@@ -15,6 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/urfave/cli"
+	"io/ioutil"
 )
 
 type Database struct {
@@ -191,7 +192,9 @@ func BarcodePage(c *gin.Context) {
 func IPQCHandler(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
+	x, _ := ioutil.ReadAll(c.Request.Body)
 
+	fmt.Printf("%s\n", string(x))
 	var ipqc model.IPQC
 	err := c.BindJSON(&ipqc)
 
@@ -228,6 +231,10 @@ func FunctionHandler(c *gin.Context) {
 
 	var function model.Function
 
+	x, _ := ioutil.ReadAll(c.Request.Body)
+
+	fmt.Printf("%s\n", string(x))
+
 	err := c.BindJSON(&function)
 
 	if err != nil {
@@ -259,7 +266,9 @@ func FunctionHandler(c *gin.Context) {
 func BarcodeHandler(c *gin.Context) {
 	db := NewDB()
 	defer db.Close()
+	x, _ := ioutil.ReadAll(c.Request.Body)
 
+	fmt.Printf("%s\n", string(x))
 	var barcode model.Barcode
 
 	err := c.BindJSON(&barcode)
