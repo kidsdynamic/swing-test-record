@@ -290,7 +290,7 @@ func BarcodeHandler(c *gin.Context) {
 	t := db.MustBegin()
 	for _, data := range barcode.Data {
 		_ = t.MustExec("INSERT INTO Barcode (type, lot_number, barcode_number, date_time, date_created) VALUES (?, ?, ?, ?, NOW())",
-			barcode.Type, barcode.Type, data.BarcodeNumber, data.DateTime)
+			barcode.Type, barcode.LotNumber, data.BarcodeNumber, data.DateTime)
 	}
 
 	t.Commit()
