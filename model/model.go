@@ -95,3 +95,10 @@ type BarcodeData struct {
 	BarcodeNumber string `json:"Barcode_number"`
 	DateTime      string `json:"Date_time"`
 }
+
+type FinalTest struct {
+	ID          int       `json:"id" db:"id"`
+	MacID       string    `json:"mac_id" db:"mac_id"`
+	DateCreated time.Time `json:"date_created" db:"date_created"`
+	Result      bool      `json:"result" db:"result"`
+}

@@ -11,6 +11,8 @@ import (
 
 	"github.com/swing-test-record/model"
 
+	"database/sql"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -100,6 +102,9 @@ func main() {
 		api.POST("/ipqc", IPQCHandler)
 		api.POST("/function", FunctionHandler)
 		api.POST("/barcode", BarcodeHandler)
+		api.POST("/final", FinalTestHandler)
+
+		api.GET("/checkMacId", CheckMacID)
 
 		router.GET("/", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index.html", nil)
@@ -109,8 +114,8 @@ func main() {
 		router.GET("/barcode", BarcodePage)
 		router.GET("/function", FunctionPage)
 
-		//router.Run(":8110")
-		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
+		router.Run(":8110")
+		//router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
 		return nil
 	}
 
@@ -305,6 +310,63 @@ func BarcodeHandler(c *gin.Context) {
 	})
 }
 
+func CheckMacID(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	macID := c.Query("mac_id")
+
+	if macID == "" {
+		ErrorHandler(c, "Mac ID is required")
+		return
+	}
+
+	var barcode model.BarcodeDatabase
+
+	if err := db.Get(&barcode, "SELECT id, type, lot_number, barcode_number, date_created, date_time FROM Barcode WHERE barcode_number = ? LIMIT 1", macID); err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{})
+			return
+		}
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on Getting barcode from database: %#v", err))
+		return
+	}
+
+	if barcode.BarcodeNumber != "" {
+		c.JSON(http.StatusOK, gin.H{})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "The MAC ID doesn't exist in database",
+		})
+	}
+
+}
+
+func FinalTestHandler(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	var finalTest model.FinalTest
+
+	if err := c.BindJSON(&finalTest); err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on convert final test struct: %#v", err))
+		return
+	}
+
+	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, result, date_created) VALUES (:mac_id, :result, NOW())", finalTest); err != nil {
+		log.Println(err)
+		ErrorHandler(c, fmt.Sprintf("Error on insert into final test database: %#v", err))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "true",
+	})
+
+}
+
 func ErrorHandler(c *gin.Context, message string) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"success": "false",
@@ -374,4 +436,20 @@ func InitDatabase() {
 		log.Printf("Table Barcode already exists\n")
 	}
 
+	/*
+		Create Final result table
+	*/
+	_, err = db.Query("SELECT 1 FROM Final_Test LIMIT 1")
+	if err != nil {
+		_, err = db.Exec("CREATE TABLE Final_Test(id INT NOT NULL AUTO_INCREMENT, mac_id VARCHAR(200) NOT NULL, result char check (bool in (0,1)), date_created datetime NOT NULL" +
+			", PRIMARY KEY (id))")
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Table FinalTest successfully created\n")
+
+	} else {
+		log.Printf("Table FinalTest already exists\n")
+	}
 }
