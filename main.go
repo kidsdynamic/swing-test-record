@@ -113,6 +113,7 @@ func main() {
 		router.GET("/ipqc", IPQCPage)
 		router.GET("/barcode", BarcodePage)
 		router.GET("/function", FunctionPage)
+		router.GET("/finalResult", FinalResultPage)
 
 		//router.Run(":8110")
 		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
@@ -190,6 +191,23 @@ func BarcodePage(c *gin.Context) {
 	fmt.Println(barcodeData)
 	c.HTML(http.StatusOK, "barcode.html", gin.H{
 		"data": barcodeData,
+	})
+}
+
+func FinalResultPage(c *gin.Context) {
+	db := NewDB()
+	defer db.Close()
+
+	finalResult := []model.FinalTest{}
+	err := db.Select(&finalResult, "SELECT * FROM Final_Test ORDER BY date_created DESC")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(finalResult)
+	c.HTML(http.StatusOK, "finalResult.html", gin.H{
+		"data": finalResult,
 	})
 }
 
@@ -315,7 +333,7 @@ func CheckMacID(c *gin.Context) {
 	defer db.Close()
 
 	macID := c.Query("mac_id")
-
+	log.Printf("Mac ID: %s", macID)
 	if macID == "" {
 		ErrorHandler(c, "Mac ID is required")
 		return

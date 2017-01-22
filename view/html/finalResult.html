@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Swing Test Result</title>
+    <title></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -11,28 +11,43 @@
 </head>
 <body>
 <div class="container">
-    <h2>Swing - 產測資料</h2>
+    <a href="/"><h4>< Home</h4></a>
+    <h2>Final Result Table</h2>
     <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Mac ID</th>
+            <th>Result</th>
+            <th>Date Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{ range $index, $d := .data }}
         <tr>
             <td>
-                <a href="ipqc"><h3>IPQC</h3></a>
+                {{ $d.ID }}
             </td>
             <td>
-                <a href="function"><h3>Function</h3></a>
+                {{ $d.MacID }}
             </td>
             <td>
-                <a href="barcode"><h3>Barcode</h3></a>
+                {{ $d.Result }}
             </td>
             <td>
-                <a href="finalResult"><h3>Final Result</h3></a>
+                {{ $d.DateCreated }}
             </td>
+
         </tr>
+
+        {{ end }}
+        </tbody>
+
+
     </table>
-
-
-
-
 </div>
+
 
 </body>
 </html>
