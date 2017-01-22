@@ -152,7 +152,6 @@ func IPQCPage(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(ipqc)
 
 	c.HTML(http.StatusOK, "ipqc.html", gin.H{
 		"data": ipqc,
@@ -170,7 +169,6 @@ func FunctionPage(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(functionData)
 
 	c.HTML(http.StatusOK, "function.html", gin.H{
 		"data": functionData,
@@ -188,7 +186,6 @@ func BarcodePage(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(barcodeData)
 	c.HTML(http.StatusOK, "barcode.html", gin.H{
 		"data": barcodeData,
 	})
@@ -205,7 +202,6 @@ func FinalResultPage(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(finalResult)
 	c.HTML(http.StatusOK, "finalResult.html", gin.H{
 		"data": finalResult,
 	})
