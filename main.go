@@ -114,8 +114,8 @@ func main() {
 		router.GET("/barcode", BarcodePage)
 		router.GET("/function", FunctionPage)
 
-		router.Run(":8110")
-		//router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
+		//router.Run(":8110")
+		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
 		return nil
 	}
 
