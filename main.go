@@ -13,9 +13,12 @@ import (
 
 	"database/sql"
 
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/swing-test-record/export"
 	"github.com/urfave/cli"
 )
 
@@ -115,6 +118,10 @@ func main() {
 		router.GET("/function", FunctionPage)
 		router.GET("/finalResult", FinalResultPage)
 
+		router.GET("/exportIPQCToCSV", exportIPQCToCSV)
+		router.GET("/exportFunctionToCSV", exportFunctionToCSV)
+		router.GET("/exportBarcodeToCSV", exportBarcodeToCSV)
+
 		//router.Run(":8110")
 		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
 		return nil
@@ -139,6 +146,42 @@ func Auth() gin.HandlerFunc {
 		}
 	}
 
+}
+
+func exportIPQCToCSV(c *gin.Context) {
+
+	db := NewDB()
+	csvString := export.ExportIPQCToCSV(db)
+
+	c.Writer.Header().Set("Content-Disposition", "attachment; filename=ipqc.csv")
+	c.Writer.Header().Set("Content-type", c.Request.Header.Get("Content-Type"))
+	c.Writer.Header().Set("Content-Length", strconv.Itoa(len(csvString)))
+
+	c.Writer.WriteString(csvString)
+}
+
+func exportFunctionToCSV(c *gin.Context) {
+
+	db := NewDB()
+	csvString := export.ExportFunctionToCSV(db)
+
+	c.Writer.Header().Set("Content-Disposition", "attachment; filename=function.csv")
+	c.Writer.Header().Set("Content-type", c.Request.Header.Get("Content-Type"))
+	c.Writer.Header().Set("Content-Length", strconv.Itoa(len(csvString)))
+
+	c.Writer.WriteString(csvString)
+}
+
+func exportBarcodeToCSV(c *gin.Context) {
+
+	db := NewDB()
+	csvString := export.ExportBarcodeToCSV(db)
+
+	c.Writer.Header().Set("Content-Disposition", "attachment; filename=barcode.csv")
+	c.Writer.Header().Set("Content-type", c.Request.Header.Get("Content-Type"))
+	c.Writer.Header().Set("Content-Length", strconv.Itoa(len(csvString)))
+
+	c.Writer.WriteString(csvString)
 }
 
 func IPQCPage(c *gin.Context) {

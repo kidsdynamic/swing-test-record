@@ -4,3 +4,4 @@ import:
 - package: gopkg.in/gin-gonic/gin.v1
 - package: github.com/urfave/cli
 - package: github.com/jmoiron/sqlx
+- package: github.com/gocarina/gocsv
