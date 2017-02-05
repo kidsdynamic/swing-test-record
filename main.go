@@ -498,7 +498,7 @@ func InitDatabase() {
 	*/
 	_, err = db.Query("SELECT 1 FROM Final_Test LIMIT 1")
 	if err != nil {
-		_, err = db.Exec("CREATE TABLE Final_Test(id INT NOT NULL AUTO_INCREMENT, mac_id VARCHAR(200) NOT NULL, result char check (bool in (0,1)), date_created datetime NOT NULL" +
+		_, err = db.Exec("CREATE TABLE Final_Test(id INT NOT NULL AUTO_INCREMENT, mac_id VARCHAR(200) NOT NULL, battery_level INT(11) NOT NULL, result char check (bool in (0,1)), date_created datetime NOT NULL" +
 			", PRIMARY KEY (id))")
 
 		if err != nil {

@@ -97,8 +97,9 @@ type BarcodeData struct {
 }
 
 type FinalTest struct {
-	ID          int       `json:"id" db:"id"`
-	MacID       string    `json:"mac_id" db:"mac_id"`
-	DateCreated time.Time `json:"date_created" db:"date_created"`
-	Result      bool      `json:"result" db:"result"`
+	ID           int       `json:"id" db:"id"`
+	MacID        string    `json:"mac_id" db:"mac_id"`
+	BatteryLevel string    `json:"battery_level" db:"battery_level`
+	DateCreated  time.Time `json:"date_created" db:"date_created"`
+	Result       bool      `json:"result" db:"result"`
 }
