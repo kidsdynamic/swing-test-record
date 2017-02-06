@@ -102,4 +102,10 @@ type FinalTest struct {
 	BatteryLevel string    `json:"battery_level" db:"battery_level"`
 	DateCreated  time.Time `json:"date_created" db:"date_created"`
 	Result       bool      `json:"result" db:"result"`
+	UVMax        string    `json:"uv_max" db:"uv_max"`
+	UVMin        string    `json:"uv_min" db:"uv_min"`
+	XMax         string    `json:"x_max" db:"x_max"`
+	XMin         string    `json:"x_min" db:"x_min"`
+	YMax         string    `json:"y_max" db:"y_max"`
+	YMin         string    `json:"y_min" db:"y_min"`
 }

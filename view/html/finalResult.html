@@ -19,6 +19,12 @@
             <th>ID</th>
             <th>Mac ID</th>
             <th>Battery Level</th>
+            <th>X Min</th>
+            <th>X Min</th>
+            <th>Y MAX</th>
+            <th>Y Min</th>
+            <th>UV Max</th>
+            <th>UV Min</th>
             <th>Result</th>
             <th>Date Created</th>
         </tr>
@@ -35,6 +41,24 @@
             </td>
             <td>
                 {{ $d.BatteryLevel}}
+            </td>
+            <td>
+                {{ $d.XMax}}
+            </td>
+            <td>
+                {{ $d.XMin}}
+            </td>
+            <td>
+                {{ $d.YMax}}
+            </td>
+            <td>
+                {{ $d.YMin}}
+            </td>
+            <td>
+                {{ $d.UVMax}}
+            </td>
+            <td>
+                {{ $d.UVMin}}
             </td>
             <td>
                 {{ $d.Result }}
