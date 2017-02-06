@@ -412,7 +412,8 @@ func FinalTestHandler(c *gin.Context) {
 		return
 	}
 
-	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, result, date_created) VALUES (:mac_id, :result, NOW())", finalTest); err != nil {
+	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, date_created) VALUES "+
+		"(:mac_id, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, NOW())", finalTest); err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on insert into final test database: %#v", err))
 		return
@@ -498,8 +499,9 @@ func InitDatabase() {
 	*/
 	_, err = db.Query("SELECT 1 FROM Final_Test LIMIT 1")
 	if err != nil {
-		_, err = db.Exec("CREATE TABLE Final_Test(id INT NOT NULL AUTO_INCREMENT, mac_id VARCHAR(200) NOT NULL, battery_level INT(11) NOT NULL, result char check (bool in (0,1)), date_created datetime NOT NULL" +
-			", PRIMARY KEY (id))")
+		_, err = db.Exec("CREATE TABLE Final_Test(id INT NOT NULL AUTO_INCREMENT, mac_id VARCHAR(200) NOT NULL, battery_level VARCHAR(11) NOT NULL, " +
+			"result char check (bool in (0,1)), date_created datetime NOT NULL, x_max VARCHAR(200) NOT NULL, x_min VARCHAR(200) NOT NULL, y_max VARCHAR(200) NOT NULL" +
+			", y_min VARCHAR(200) NOT NULL, uv_max VARCHAR(200) NOT NULL, uv_min VARCHAR(200) NOT NULL, PRIMARY KEY (id))")
 
 		if err != nil {
 			log.Fatal(err)
