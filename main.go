@@ -11,8 +11,6 @@ import (
 
 	"github.com/swing-test-record/model"
 
-	"database/sql"
-
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -378,25 +376,20 @@ func CheckMacID(c *gin.Context) {
 		return
 	}
 
-	var barcode model.BarcodeDatabase
+	var exists bool
+	err := db.Get(&exists, "SELECT EXISTS(SELECT id from Function where mac_address = ? LIMIT 1)", macID)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	if err := db.Get(&barcode, "SELECT id, type, lot_number, barcode_number, date_created, date_time FROM Barcode WHERE barcode_number = ? LIMIT 1", macID); err != nil {
-		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{})
-			return
-		}
-		log.Println(err)
-		ErrorHandler(c, fmt.Sprintf("Error on Getting barcode from database: %#v", err))
+	if exists {
+		c.JSON(http.StatusOK, gin.H{})
 		return
 	}
 
-	if barcode.BarcodeNumber != "" {
-		c.JSON(http.StatusOK, gin.H{})
-	} else {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "The MAC ID doesn't exist in database",
-		})
-	}
+	c.JSON(http.StatusNotFound, gin.H{
+		"message": "The MAC ID doesn't exist in database",
+	})
 
 }
 
