@@ -120,8 +120,8 @@ func main() {
 		router.GET("/exportFunctionToCSV", exportFunctionToCSV)
 		router.GET("/exportBarcodeToCSV", exportBarcodeToCSV)
 
-		router.Run(":8110")
-		//router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
+		//router.Run(":8110")
+		router.RunTLS(":8110", "./.ssh/childrenlab.chained.crt", "./.ssh/childrenlab.com.key")
 		return nil
 	}
 
