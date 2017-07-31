@@ -1,22 +1,17 @@
 package main
 
 import (
-	"log"
-
-	"net/http"
-
 	"fmt"
-
+	"log"
+	"net/http"
 	"os"
-
-	"github.com/swing-test-record/model"
-
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/swing-test-record/export"
+	"github.com/kidsdynamic/swing-test-record/export"
+	"github.com/kidsdynamic/swing-test-record/model"
 	"github.com/urfave/cli"
 )
 
@@ -405,8 +400,8 @@ func FinalTestHandler(c *gin.Context) {
 		return
 	}
 
-	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, date_created) VALUES "+
-		"(:mac_id, :firmware_version, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, NOW())", finalTest); err != nil {
+	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, company, date_created) VALUES "+
+		"(:mac_id, :firmware_version, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, :company, NOW())", finalTest); err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on insert into final test database: %#v", err))
 		return

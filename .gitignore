@@ -3,6 +3,6 @@ run
 
 vendor/*
 swing-test-record
-.ssh/childrenlab.chained.crt
 
-.ssh/childrenlab.com.key
+.ssh
+build

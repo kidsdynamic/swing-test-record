@@ -1,15 +1,36 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;swing-test-record&gt;">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../gopkg.in" />
-      <root url="file://$PROJECT_DIR$/.." />
-      <root url="file://$PROJECT_DIR$/../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../../../gitlab.com" />
+      <root url="file://$PROJECT_DIR$/../.." />
+      <root url="file://$PROJECT_DIR$/../../../sourcegraph.com" />
+      <root url="file://$PROJECT_DIR$/../../../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv2" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../../../apd_parse_question" />
+      <root url="file://$PROJECT_DIR$/../../../questions_generator" />
+      <root url="file://$PROJECT_DIR$/../../../csvToxml" />
+      <root url="file://$PROJECT_DIR$/../../../mongo_project" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv_cumulative2012" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv_OB" />
+      <root url="file://$PROJECT_DIR$/../../../db_tester" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv" />
     </CLASSES>
-    <JAVADOC />
     <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../gopkg.in" />
-      <root url="file://$PROJECT_DIR$/.." />
-      <root url="file://$PROJECT_DIR$/../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../../../gitlab.com" />
+      <root url="file://$PROJECT_DIR$/../.." />
+      <root url="file://$PROJECT_DIR$/../../../sourcegraph.com" />
+      <root url="file://$PROJECT_DIR$/../../../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv2" />
+      <root url="file://$PROJECT_DIR$/../../../golang.org" />
+      <root url="file://$PROJECT_DIR$/../../../apd_parse_question" />
+      <root url="file://$PROJECT_DIR$/../../../questions_generator" />
+      <root url="file://$PROJECT_DIR$/../../../csvToxml" />
+      <root url="file://$PROJECT_DIR$/../../../mongo_project" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv_cumulative2012" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv_OB" />
+      <root url="file://$PROJECT_DIR$/../../../db_tester" />
+      <root url="file://$PROJECT_DIR$/../../../question_doc_to_csv" />
     </SOURCES>
     <excluded>
       <root url="file://$PROJECT_DIR$" />

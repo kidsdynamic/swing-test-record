@@ -1,0 +1,9 @@
+git pull
+glide install
+rm -r build
+mkdir build
+cp -r .ssh build
+cp -r view build/
+GOOS=linux go build -o build/main .
+docker build -t jack08300/swing-test-record:latest .
+docker push jack08300/swing-test-record:latest

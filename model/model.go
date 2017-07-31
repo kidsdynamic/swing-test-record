@@ -109,4 +109,5 @@ type FinalTest struct {
 	XMin            string    `json:"x_min" db:"x_min"`
 	YMax            string    `json:"y_max" db:"y_max"`
 	YMin            string    `json:"y_min" db:"y_min"`
+	Company         string    `json:"company" db:"company"`
 }
