@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type IPQCDatabase struct {
 	Id           int
@@ -97,17 +100,17 @@ type BarcodeData struct {
 }
 
 type FinalTest struct {
-	ID              int       `json:"id" db:"id"`
-	MacID           string    `json:"mac_id" db:"mac_id"`
-	FirmwareVersion string    `json:"firmware_version" db:"firmware_version"`
-	BatteryLevel    string    `json:"battery_level" db:"battery_level"`
-	DateCreated     time.Time `json:"date_created" db:"date_created"`
-	Result          bool      `json:"result" db:"result"`
-	UVMax           string    `json:"uv_max" db:"uv_max"`
-	UVMin           string    `json:"uv_min" db:"uv_min"`
-	XMax            string    `json:"x_max" db:"x_max"`
-	XMin            string    `json:"x_min" db:"x_min"`
-	YMax            string    `json:"y_max" db:"y_max"`
-	YMin            string    `json:"y_min" db:"y_min"`
-	Company         string    `json:"company" db:"company"`
+	ID              int            `json:"id" db:"id"`
+	MacID           string         `json:"mac_id" db:"mac_id"`
+	FirmwareVersion string         `json:"firmware_version" db:"firmware_version"`
+	BatteryLevel    string         `json:"battery_level" db:"battery_level"`
+	DateCreated     time.Time      `json:"date_created" db:"date_created"`
+	Result          bool           `json:"result" db:"result"`
+	UVMax           string         `json:"uv_max" db:"uv_max"`
+	UVMin           string         `json:"uv_min" db:"uv_min"`
+	XMax            string         `json:"x_max" db:"x_max"`
+	XMin            string         `json:"x_min" db:"x_min"`
+	YMax            string         `json:"y_max" db:"y_max"`
+	YMin            string         `json:"y_min" db:"y_min"`
+	Company         sql.NullString `json:"company" db:"company"`
 }

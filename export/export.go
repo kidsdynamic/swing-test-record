@@ -3,7 +3,7 @@ package export
 import (
 	"github.com/gocarina/gocsv"
 	"github.com/jmoiron/sqlx"
-	"github.com/swing-test-record/model"
+	"github.com/kidsdynamic/swing-test-record/model"
 )
 
 func ExportIPQCToCSV(db *sqlx.DB) string {
