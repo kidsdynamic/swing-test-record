@@ -406,7 +406,7 @@ func FinalTestHandler(c *gin.Context) {
 		finalTest.Language = "JA"
 	}
 
-	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, company, date_created) VALUES "+
+	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, company, language, date_created) VALUES "+
 		"(:mac_id, :firmware_version, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, :company, :language, NOW())", finalTest); err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on insert into final test database: %#v", err))
