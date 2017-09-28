@@ -100,6 +100,7 @@ type FinalTest struct {
 	ID              int       `json:"id" db:"id"`
 	MacID           string    `json:"mac_id" db:"mac_id"`
 	FirmwareVersion string    `json:"firmware_version" db:"firmware_version"`
+	ProductVersion  int64     `json:"product_version" db:"product_version"`
 	BatteryLevel    string    `json:"battery_level" db:"battery_level"`
 	DateCreated     time.Time `json:"date_created" db:"date_created"`
 	Result          bool      `json:"result" db:"result"`

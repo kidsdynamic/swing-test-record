@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -402,12 +401,18 @@ func FinalTestHandler(c *gin.Context) {
 	}
 
 	finalTest.Language = "EN"
-	if finalTest.FirmwareVersion != "" && strings.Contains(finalTest.FirmwareVersion, "KDV01") {
+	if finalTest.FirmwareVersion != "" && finalTest.FirmwareVersion[len(finalTest.FirmwareVersion)-1:] == "J" {
 		finalTest.Language = "JA"
 	}
 
-	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, company, language, date_created) VALUES "+
-		"(:mac_id, :firmware_version, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, :company, :language, NOW())", finalTest); err != nil {
+	v, err := strconv.ParseInt(finalTest.FirmwareVersion[3:5], 10, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	finalTest.ProductVersion = v
+
+	if _, err := db.NamedExec("INSERT INTO Final_Test (mac_id, firmware_version, result, battery_level, x_max, x_min, y_max, y_min, uv_max, uv_min, company, language, date_created, product_version) VALUES "+
+		"(:mac_id, :firmware_version, :result, :battery_level, :x_max, :x_min, :y_max, :y_min, :uv_max, :uv_min, :company, :language, NOW(), :product_version)", finalTest); err != nil {
 		log.Println(err)
 		ErrorHandler(c, fmt.Sprintf("Error on insert into final test database: %#v", err))
 		return
